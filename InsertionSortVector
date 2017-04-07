@@ -1,0 +1,44 @@
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+void sort(vector <int> v, int n){
+	int j,key;
+	for (int i = 1; i < n; ++i)
+	{
+		key=v[i];
+		j=i-1;
+		while( j >= 0 && v[j] > key  ){
+			v[j+1] = v[j];
+			j=j-1;
+			/*
+			for (int k = 0; k < n; ++k)
+			{
+				cout << v[k];
+			}
+			cout << "\n";*/
+		}
+		v[j+1]=key;
+	}
+	return ;
+}
+
+int main(){
+	int size;
+	vector<int> v;
+	cout << "Tamanio del arreglo: \n";
+	cin >> size;
+	for (int i = 0; i < size; ++i)
+	{
+		int aux;
+		cin >> aux;
+		v.push_back(aux);
+	}
+	sort(v,size);
+	for (int k = 0; k < size; ++k)
+	{
+		cout << v[k];
+	}
+	return 1;
+}

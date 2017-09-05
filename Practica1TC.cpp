@@ -4,6 +4,58 @@
 
 using namespace std;
 
+vector<int> indexCreation(vector<string> match){
+	int m = match.size();
+	vector<int> arr(m);
+	arr[0] = 0;
+	int i =1,j=0;
+	while(i < m){
+		if(match[i] == match[j]){
+			j++;
+			arr[i] = j;
+			i++;
+		}
+
+		if(match[i] != match[j] && j == 0){
+			arr[i] = j;
+			i++;
+		}
+
+		if(match[i] != match[j] && j != 0){
+			j = arr[j-1];
+		}
+	}
+	return arr;
+} 
+
+void KMP(vector<string> texto, vector<string> buscar){
+	int m = buscar.size();
+	int n = texto.size();
+	vector <int> indices;
+	indices = indexCreation(buscar);
+	int i=0,j=0;
+	while(i < N){
+		if(pat[j] == texto[i]){
+			j++;
+			i++;
+		}
+		if(j == M){
+			cout << "Pattern found at index" << i-j;
+		}
+		else{
+			if(i < N && pat[j] != texto[i]){
+				if(j != 0){
+					j = indices[j-1];
+				}
+				else{
+					i++;
+				}
+			}
+		}
+	}
+	return ;
+}
+
 void ingresoAlfabeto(vector<string> *alfabeto1,unordered_map<string,bool> *umap){
 	bool b;
 	string a;
@@ -146,29 +198,53 @@ void powerABC(vector<string> alpha, string past, int pow,bool check){
 	return ;
 }
 
-void filterPow(vector<string> alpha,int pow){
-	vector<string> aux;
-	int a=0;
-	if(pow < 0){
+//Checar esta funcion
 
-		for (int i = alpha.size()-1; i >= 0 ; i--)
-		{
-			aux[a] = alpha[i];
-			a++;
+void filterPow(vector<string> alpha,int poten){
+	vector<string> aux;
+	string ayuda;
+	int a=0, i=1;
+	if(poten < 0){
+		while((i-1)< alpha.size()){
+			ayuda = alpha[alpha.size()-i];
+			aux.push_back(ayuda);
+			i++;
 		}
-		powerABC(aux," ",abs(pow),true);
+		powerABC(aux," ",abs(poten),true);
 	}
 	else{
-		powerABC(alpha," ",pow,true);
+		powerABC(alpha," ",poten,true);
 	}
 }
 
 int main(){
 	vector<string> alfabeto1,alfabeto2;
 	vector<string> p1,p2;
-	int opc;
+	int opc,pot;
 	vector <string> resultado;
 	unordered_map<string,bool> umap,umap2;
+	vector<string> mandar;
+
+	mandar.push_back("a");
+	mandar.push_back("c");
+	mandar.push_back("a");
+	mandar.push_back("c");
+	mandar.push_back("a");
+	mandar.push_back("b");
+	mandar.push_back("a");
+	mandar.push_back("c");
+	mandar.push_back("a");
+	mandar.push_back("c");
+	mandar.push_back("a");
+	mandar.push_back("b");
+	mandar.push_back("a");
+	mandar.push_back("c");
+	mandar.push_back("a");
+	mandar.push_back("c");
+	mandar.push_back("a");
+	mandar.push_back("c");
+
+
 	cout << "Ingresa el alfabeto 1: \n";
 	//inciso a
 	ingresoAlfabeto(&alfabeto1,&umap);
@@ -205,11 +281,12 @@ int main(){
 				break;
 			}
 			case 4:{
-
+				indexCreation(mandar);
 			}
 			case 5:{
-				//inciso g
-				filterPow(alfabeto1,-1);
+				//inciso
+				cin >> pot;
+				filterPow(alfabeto1,pot);
 				cout << "\nseparacion\n";
 				break;
 			}

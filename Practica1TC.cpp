@@ -29,21 +29,32 @@ vector<int> indexCreation(vector<string> match){
 } 
 
 void KMP(vector<string> texto, vector<string> buscar){
-	int m = buscar.size();
-	int n = texto.size();
+	int M = buscar.size();
+	int N = texto.size();
 	vector <int> indices;
 	indices = indexCreation(buscar);
 	int i=0,j=0;
-	while(i < N){
-		if(pat[j] == texto[i]){
+	while(i < N && j < M){
+		if(buscar[j] == texto[i]){
 			j++;
 			i++;
 		}
 		if(j == M){
-			cout << "Pattern found at index" << i-j;
+			cout << "Patter found at index " << (i-j) + 1 << "\n";
+			if((i - j) == 0){
+				cout << "Es un prefijo\n";
+			}
+			else{
+				if((i-j) + M == N){
+					cout << "Es un sufijo\n";
+				}
+				else{
+					cout << "Es una subcadena\n";
+				}
+			}
 		}
 		else{
-			if(i < N && pat[j] != texto[i]){
+			if(i < N && buscar[j] != texto[i]){
 				if(j != 0){
 					j = indices[j-1];
 				}
@@ -57,19 +68,56 @@ void KMP(vector<string> texto, vector<string> buscar){
 }
 
 void ingresoAlfabeto(vector<string> *alfabeto1,unordered_map<string,bool> *umap){
-	bool b;
+	bool b,flag=false;
+	int opc,as1,as2;
 	string a;
+	char r1,r2,aux;
 	
-	while(true){
-		cin >> a;
-		if(a == "&"){
-			break;
+
+	do{	
+		cout << "\n1.-Introducir alfabeto por caracteres individuales\n";
+		cout << "2.-Introducir alfabeto por rango de caracteres \n";
+		cin >> opc;
+		if(opc == 1){
+			cout << "Introduce los caracteres: \n";
+			while(true){
+				cin >> a;
+				if(a == "&"){
+					break;
+				}
+				else{
+					if((*umap).count(a) != 0){
+						flag = true;
+					}
+					else{
+						(*alfabeto1).push_back(a);
+						(*umap)[a] = true;
+					}
+				}
+			}
+			if (flag)
+			{	
+				cout << "\nNo se pueden repetir caracteres en un alfabeto \n";
+				(*alfabeto1).clear();
+				(*umap).clear();
+				opc = 3;
+				//ingresoAlfabeto(alfabeto1,umap);
+			}
 		}
-		else{
-			(*alfabeto1).push_back(a);
-			(*umap)[a] = true;
+		else if(opc == 2){
+			cout << "Introduzca el rango de caracteres (inicial final)\n";
+			cin >> r1 >> r2;
+			as1 = r1;
+			as2 =  r2;
+			for (int i = as1; i <= as2; ++i)
+			{
+				aux = i;
+				//(*alfabeto1).push_back(aux);
+			}
 		}
-	}
+	}while(opc != 1 && opc != 2);
+	
+	
 	return ;
 }
 
@@ -102,6 +150,12 @@ void timesString(vector<string> word){
 			count++;
 		}
 	}
+	cout << "Palabra: ";
+	for (int i = 0; i < word.size(); ++i)
+	{
+		cout << word[i];
+	}
+	cout << "\n";
 	cout << "Se repite " << count << " veces \n";
 	return ;
 }
@@ -118,7 +172,7 @@ bool check(vector<string> alpha,vector<string> p,  unordered_map<string,bool> um
 		//if(umap.find(p[j]) == umap.end())
 		{
 			cout << p[j] << " ";
-			cout << "Error"<< "\n";
+			cout << "Error: La cadena es incorrecta"<< "\n";
 			flag = false;
 			break;
 		}
@@ -131,7 +185,7 @@ vector<string> pedirString(vector<string> alpha,  unordered_map<string,bool> uma
 	bool b = true;
 	vector<string> p;
 	string a;
-	
+	cout << "Introduce la cadena: " << endl;
 	do{	
 		if(!b){
 			p.clear();
@@ -162,6 +216,7 @@ void printElements(vector<string> v){
 vector<string> multiABC(vector<string> alpha, vector<string> beta){
 	string aux;
 	vector <string> r;
+	
 	for (int i = 0; i < alpha.size(); ++i)
 	{
 		for (int j = 0; j < beta.size(); ++j)
@@ -170,6 +225,7 @@ vector<string> multiABC(vector<string> alpha, vector<string> beta){
 			r.push_back(aux);
 		}
 	}
+	
 	return r;
 }
 
@@ -224,27 +280,7 @@ int main(){
 	vector <string> resultado;
 	unordered_map<string,bool> umap,umap2;
 	vector<string> mandar;
-
-	mandar.push_back("a");
-	mandar.push_back("c");
-	mandar.push_back("a");
-	mandar.push_back("c");
-	mandar.push_back("a");
-	mandar.push_back("b");
-	mandar.push_back("a");
-	mandar.push_back("c");
-	mandar.push_back("a");
-	mandar.push_back("c");
-	mandar.push_back("a");
-	mandar.push_back("b");
-	mandar.push_back("a");
-	mandar.push_back("c");
-	mandar.push_back("a");
-	mandar.push_back("c");
-	mandar.push_back("a");
-	mandar.push_back("c");
-
-
+	
 	cout << "Ingresa el alfabeto 1: \n";
 	//inciso a
 	ingresoAlfabeto(&alfabeto1,&umap);
@@ -254,13 +290,13 @@ int main(){
 
 	do{
 		cout << "MENU\n"
-		<<	"1.-Inciso c) (ingresar cadenas)\n"
-		<<	"2.-Inciso d) (potencia de cadenas)\n"
-		<<	"3.-Inciso e) (simbolo en cadena)\n"
-		<<	"4.-Inciso f) (sufijo,prefijo)\n"
-		<<	"5.-Inciso g) (potencia de alfabeto)\n"
-		<<	"6.-Inciso h) (multi abc1 y abc2)\n"
-		<<	"7.-Inciso i) (multi abc1 con abc2, con abc1) \n"
+		<<	"1.-Ingresa las cadenas del ABC1\n"
+		<<	"2.-Generar la potencia de las cadenas\n"
+		<<	"3.-Encontrar un simbolo en una cadena\n"
+		<<	"4.-Saber si w1 es subcadena de w2\n"
+		<<	"5.-Sacar la potencia de un alfabeto\n"
+		<<	"6.-Multiplicar ABC1 * ABC2\n"
+		<<	"7.-Multiplicar ABC1 * ABC2 * ABC1 \n"
 		<<	"8.- Terminar\n";
 		cin >> opc;
 		switch(opc){
@@ -281,30 +317,41 @@ int main(){
 				break;
 			}
 			case 4:{
-				indexCreation(mandar);
+				//indexCreation(mandar);
+				if(p1.size() !=0){
+					KMP(p2,p1);
+				}
+				else
+					cout << "Error\n";
+				break;
 			}
 			case 5:{
 				//inciso
+				cout << "Introduce la potencia deseada: \n";
 				cin >> pot;
 				filterPow(alfabeto1,pot);
-				cout << "\nseparacion\n";
+				cout << "\n";
 				break;
 			}
 			case 6:{
 				//incisos h e i 
+				cout << "Resultado: \n";
 				resultado = multiABC(alfabeto1,alfabeto2);
+				cout << "\n";
 				printElements(resultado);
 				resultado.clear();
 				break;
 			}
 			case 7:{
+				cout << "Resultado: \n";
 				resultado = multiABC(multiABC(alfabeto1,alfabeto2),alfabeto1);
+				cout << "\n";
 				printElements(resultado);
 				resultado.clear();
 				break;
 			}
 		}
-	}while(opc != 9);
+	}while(opc > 0 && opc < 8);
 	cout << "Goodbye rey";
 	return 0;
 }

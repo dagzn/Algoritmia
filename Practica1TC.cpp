@@ -33,13 +33,26 @@ void KMP(vector<string> texto, vector<string> buscar){
 	int N = texto.size();
 	vector <int> indices;
 	indices = indexCreation(buscar);
+	bool check = true;
 	int i=0,j=0;
 	while(i < N && j < M){
 		if(buscar[j] == texto[i]){
 			j++;
 			i++;
 		}
+		else{
+			if(i < N && buscar[j] != texto[i]){
+				if(j != 0){
+					j = indices[j-1];
+				}
+				else{
+					i++;
+				}
+			}
+		}
+
 		if(j == M){
+			check = false;
 			cout << "Patter found at index " << (i-j) + 1 << "\n";
 			if((i - j) == 0){
 				cout << "Es un prefijo\n";
@@ -52,17 +65,13 @@ void KMP(vector<string> texto, vector<string> buscar){
 					cout << "Es una subcadena\n";
 				}
 			}
+			j = indices[j-1]; 
 		}
-		else{
-			if(i < N && buscar[j] != texto[i]){
-				if(j != 0){
-					j = indices[j-1];
-				}
-				else{
-					i++;
-				}
-			}
-		}
+		
+	}
+	if (check)
+	{
+		cout << "W1 no se encuentra en W2" <<endl;
 	}
 	return ;
 }
@@ -70,8 +79,8 @@ void KMP(vector<string> texto, vector<string> buscar){
 void ingresoAlfabeto(vector<string> *alfabeto1,unordered_map<string,bool> *umap){
 	bool b,flag=false;
 	int opc,as1,as2;
-	string a;
-	char r1,r2,aux;
+	string a,aux;
+	char r1,r2;
 	
 
 	do{	
@@ -107,12 +116,14 @@ void ingresoAlfabeto(vector<string> *alfabeto1,unordered_map<string,bool> *umap)
 		else if(opc == 2){
 			cout << "Introduzca el rango de caracteres (inicial final)\n";
 			cin >> r1 >> r2;
-			as1 = r1;
-			as2 =  r2;
+			as1 = (int)r1;
+			as2 = (int) r2;
+			//cout << as1 << as2 << endl;
 			for (int i = as1; i <= as2; ++i)
 			{
-				aux = i;
-				//(*alfabeto1).push_back(aux);
+				aux = (char)i;
+				//cout << aux << endl;
+				(*alfabeto1).push_back(aux);
 			}
 		}
 	}while(opc != 1 && opc != 2);
@@ -229,6 +240,13 @@ vector<string> multiABC(vector<string> alpha, vector<string> beta){
 	return r;
 }
 
+void powerOne(vector<string> alpha){
+	for (int i = 0; i < alpha.size(); ++i)
+	{
+		cout << alpha[i] << "\n";
+	}
+}
+
 void powerABC(vector<string> alpha, string past, int pow,bool check){
 	if(check){
 		for (int i = 0; i < alpha.size(); ++i)
@@ -266,17 +284,23 @@ void filterPow(vector<string> alpha,int poten){
 			aux.push_back(ayuda);
 			i++;
 		}
-		powerABC(aux," ",abs(poten),true);
+		if(abs(poten) == 1)
+			powerOne(aux);
+		else
+			powerABC(aux," ",abs(poten),true);
 	}
 	else{
-		powerABC(alpha," ",poten,true);
+		if(poten == 1)
+			powerOne(alpha);
+		else
+			powerABC(alpha," ",poten,true);
 	}
 }
 
 int main(){
 	vector<string> alfabeto1,alfabeto2;
 	vector<string> p1,p2;
-	int opc,pot;
+	int opc,pot,times;
 	vector <string> resultado;
 	unordered_map<string,bool> umap,umap2;
 	vector<string> mandar;
@@ -312,8 +336,17 @@ int main(){
 				break;
 			}
 			case 3:{
-				//inciso e
-				timesString(p1);
+				//inciso
+				do{
+					cout << "Usar cadena 1 o cadena 2: "<<endl;
+					cin >> times;
+					if (times == 1){
+						timesString(p1);
+					}
+					else if(times == 2){
+						timesString(p2);
+					}
+				}while(times != 1 || times != 2);
 				break;
 			}
 			case 4:{

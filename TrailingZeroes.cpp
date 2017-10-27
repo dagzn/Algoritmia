@@ -1,44 +1,30 @@
 #include <bits/stdc++.h>
 
 using namespace std;
-vector<int> primos;
-pair<vector<int>, vector<int> > mySieve(int N) {
-    int n = N + 1;
-    vector<int> dic(n);
-    vector<int> primes;
-    if (N == 2)
-        primes = {2};
-    if (N > 2)
-        primes = {2, 3};
-    dic[0] = -1;
-    dic[1] = 1;
-    for (int i = 4; i < n; i += 2)
-        dic[i] = 2;
-    for (int i = 9; i < n; i += 3)
-        dic[i] = 3;
-    int i = 5, w = 2, k = i * i;
-    while (k < n) {
-        if (dic[i] == 0) {
-            primes.push_back(i);
-            // skip multiples of 2
-            int jump = 2 * i;
-            for (long long int j = k; j < n; j += jump)
-                dic[j] = i;
+typedef long long int lli;
+
+vector<bool> es_primo;
+vector<lli> primos;
+
+void criba(lli n){
+    es_primo.resize(n + 1, true);
+    es_primo[0] = es_primo[1] = false;
+    es_primo[2] = true;
+    primos.push_back(2);
+    for(lli i = 4; i <= n; i += 2){
+        es_primo[i] = false;
+    }
+    lli limit = sqrt(n);
+    for(lli i = 3; i <= n; i += 2){
+        if(es_primo[i]){
+            primos.push_back(i);
+            if(i <= limit){
+                for(lli j = i * i; j <= n; j += 2 * i){
+                    es_primo[j] = false;
+                }
+            }
         }
-        i += w;
-        w = 6 - w;
-        k = i * i;
     }
-    // if you need primes bigger than the root of N
-    /*
-    while (i < n) {
-        if (dic[i] == 0)
-            primes.push_back(i);
-        i += w;
-        w = 6 - w;
-    }
-    */
-    return {dic, primes};
 }
 
 vector<pair<int,int>> primeFactorization(int n){
@@ -64,44 +50,65 @@ vector<pair<int,int>> primeFactorization(int n){
 }
 
 int trailingZeroes(int n, int b){
+    if(n == 0)
+        return 0;
     vector<pair<int,int>> factors = primeFactorization(b);
-    int cont=0,aux,total=0;
+    int cont=0,min=3000000;
+    float aux=0;
     for (int i = 0; i < factors.size(); ++i)
-    {
-        for (int j = 1; true ; ++j)
-        {
-            aux = pow(factors[i].first,j)
-            //aux = n/pow(factors[i].first,j)+0.5;
-            if(aux > n )
+    {      
+        for (int j = 1; true ; ++j){            
+            aux = n/(pow(factors[i].first,j));
+            if(aux < 1 )
                 break;
-            cont += n/aux + 0.5;
+            cont += floor(aux);
         }
         if(factors[i].second != 1)
             cont= floor(cont / factors[i].second);
-        total +=cont;
+        if(cont < min)
+            min = cont;
+        cont = 0;
     }
+    return min;
 }
 
 int forBase10(int n){
+    if(n == 0)
+        return 0;
     int res=0;
+    float aux=0;
     for (int i = 1; true ; ++i)
     {
-        if ((n/(pow(5,i))+0.5) == 0)
+        aux = (n/(pow(5,i)));
+        if (aux < 1 )
             break;
-        res+= (n/(pow(5,i)) + 0.5);
+        res+= aux + 0.5;
     }
     return res;
 }
 
+int kamenetsky(int n,int b){
+    if(n == 0)
+        return 1;
+    int total;
+    total = floor(abs(0.5*((log(2*3.141592653589793238462643383279502884)-2*n+log(n)*(1+2*n))/(log(b)))))+1;
+    return total;
+}
+
 int main(){
     int N,B;
-    primos = mySieve(1000).second;
+    criba(800);
+    ios_base::sync_with_stdio(0);
     while(cin >> N >> B){
-        if(B == 10){
-            cout << forBase10(N) << endl;
-        }
+        if(N == 0 && B == N)
+            cout << "0 0"<< endl;
         else{
-
+            if(B == 10){
+            cout << forBase10(N) <<" " << kamenetsky(N,B) << endl;
+            }
+            else{
+                cout<<trailingZeroes(N,B) << " "  << kamenetsky(N,B) << endl;
+            }
         }
     }
     

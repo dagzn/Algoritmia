@@ -10,7 +10,6 @@ void fillArray(ll ini, int n ,vector<ll> &numbers, vector<ll> &v){
             if (i & (1<<j))
                 s += numbers[j+ini];
         v[i] = s;
-        //cout << "Metemos la combinacion " << s << endl;
     }
 }
 
@@ -19,21 +18,14 @@ ll subsetSum(int n,ll a, ll b, vector<ll> &numbers){
 	vector<ll> right(1<<(n-(n/2)));
 	
 	fillArray(0,n/2,numbers,left);
-
 	fillArray(n/2,n-(n/2),numbers,right);
 	
 	ll contador=0;
-	
-	int sleft = 1<<(n/2);
-	int sright = 1<<(n-(n/2));
-
 	sort(right.begin(), right.end());
 	
-	for (int i=0; i<sleft; i++){      
-        int p = upper_bound(right.begin(), right.end(),b-left[i]) - lower_bound(right.begin(), right.end(), a-left[i]);
-        contador+=p;
-    }
-
+	for (int i=0; i<left.size(); i++)      
+        	contador += upper_bound(right.begin(), right.end(),b-left[i]) - lower_bound(right.begin(), right.end(), a-left[i]);
+	
 	return contador;
 }
 int main(){

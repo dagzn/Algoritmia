@@ -25,13 +25,6 @@ void queryResults(vector<int> &a, int n, vector<queer> &q, int m)
     int res = 0;
     int num = 0;
     sort(q.begin(), q.end(), compare);
-    /*
-    cout << "Ordenadas quedaron asi\n";
-    for (int i = 0; i < q.size(); ++i)
-    {
-    	cout << q[i]->L << " " << q[i]->R << "\n";
-    }
-    */
     
     unordered_map<int,int> numbers;
     
@@ -41,21 +34,9 @@ void queryResults(vector<int> &a, int n, vector<queer> &q, int m)
     for (int i = l; i <= r; ++i){
         int num = a[i];
         res+= num*(2*numbers[num]+1);
-        if(numbers.count(num)){
-            numbers[num]++;
-        }
-        else{
-            numbers[num]=1;
-        }
+        numbers[num]++;
         
     }
-    /*
-    for (auto it = numbers.begin(); it != numbers.end(); ++it ){
-		res+= pow(it->second,2) * it->first;
-	}
-	*/
-	//cout << "El resultado del primero fue: " << res << endl;
-	
     resultados[q[0]->id] = res; 
 
     int currL = l, currR = r;
@@ -78,10 +59,7 @@ void queryResults(vector<int> &a, int n, vector<queer> &q, int m)
             num = a[currL-1];
             //cout << "Sumamos a " << num << " y sumamos a res un " << num*(2*numbers[num]+1) << endl;
             res+= num*(2*numbers[num]+1);
-            if(numbers.count(num))
-                numbers[num]++;
-            else
-                numbers[num]=1;
+            numbers[num]++;
             
             currL--;
         }
@@ -90,12 +68,7 @@ void queryResults(vector<int> &a, int n, vector<queer> &q, int m)
             num = a[currR+1];
             //cout << "Sumamos a " << num << " y sumamos a res un " << num*(2*numbers[num]+1) << endl;
             res+= num*(2*numbers[num]+1);        
-            if(numbers.count(num)){
-                numbers[num]++;
-            }
-            else{
-                numbers[num]=1;
-            }
+            numbers[num]++;
             
             currR++;
         }
@@ -114,7 +87,8 @@ void queryResults(vector<int> &a, int n, vector<queer> &q, int m)
     }
     for (int i = 0; i < resultados.size(); ++i)
     {
-        cout << resultados[i] << "\n";
+        //cout << resultados[i] << "\n";
+        printf("%d\n", resultados[i]);
     }
 
 }

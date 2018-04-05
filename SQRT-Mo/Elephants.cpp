@@ -29,7 +29,9 @@ void elefantes(vector<int> &a, int n, vector<queer> &q, int m)
     int r = q[0]->R;
     //Solo el primero se hace individual
     for (int i = l; i <= r; ++i){
-        int num = a[i]; 	
+        int num = a[i];
+        if(numbers[num] == num)
+        	res--; 	
         numbers[num]++;
         if(numbers[num] == num)
             res++;

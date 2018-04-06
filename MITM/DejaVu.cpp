@@ -1,8 +1,8 @@
-
 #include <bits/stdc++.h>
 using namespace std;
 typedef unsigned long long int lli;
 #define EPS 1e-9
+/*
 void fillArray(lli ini, int n ,vector<double> &numbers, vector<double> &v){
 	for (int i=0; i<(1<<n); i++)
     {
@@ -14,6 +14,17 @@ void fillArray(lli ini, int n ,vector<double> &numbers, vector<double> &v){
     }
     sort(v.begin(), v.end());
 }
+*/
+void combine(int a, int b, vector<double> & ans,vector<double> &A){
+	ans.push_back(0);
+	for(int i = a; i <= b; i++){
+		int size = ans.size();
+		for(int j = 0; j < size; j++){
+			ans.push_back(ans[j] + A[i]);
+		}
+	}
+	sort(ans.begin(), ans.end());
+}
 
 bool compare(double a, double b){
 	if(abs(a - b) < EPS)
@@ -21,26 +32,28 @@ bool compare(double a, double b){
 	return a < b;
 }
 
-lli dejaVu(lli n,lli k, string p, vector<double> &numbers){
-	vector<double> left(1<<(n/2));
-	vector<double> right(1<<(n-(n/2)));
-	
+lli dejaVu(lli n,lli k, string s, vector<double> &numbers){
+	vector<double> left;
+	vector<double> right;
+	/*
 	fillArray(0,n/2,numbers,left);
 	fillArray(n/2,n-(n/2),numbers,right);
-	
+	*/
+	combine(0, (n - 1) / 2, left,numbers);
+	combine((n - 1) / 2 + 1, n - 1, right,numbers);
 	lli total=0;
 	
 	double logK=log10(k);
 
-    for (int x = 0; x <= p.size()-1; ++x){
+    for (int x = 0; x <= s.size()-1; ++x){
     	lli sub=0;
     	for (int i = 0; i < left.size(); ++i){
-    		int p = right.size() - (lower_bound(right.begin(), right.end(), logK-x-left[i],compare) - right.begin());
-    		if(p == 0)
+    		int p =(lower_bound(right.begin(), right.end(), logK-x-left[i],compare) - right.begin());
+    		if(p >=right.size())
     			continue;
-    		if(i == 0 && p == right.size())
-    			p-=1;
-    		sub+=p;
+    		if(i == 0 && p == 0)
+    			p++;
+    		sub+=(right.size()-p);
     	}
     	
     	total+=sub;

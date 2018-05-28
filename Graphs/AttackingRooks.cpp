@@ -9,109 +9,154 @@ typedef vector<Flujo> Flujo1D;
 typedef vector<Flujo1D> Flujo2D;
 const Flujo FINF = 1 << 30;
 
-// Nodos indexados de 0 a n - 1.
-class Bipartito {
+class GFlujo
+{
 public:
-	int n; Lista pareja;
+	int n;
 	vector<Lista> aristas;
-	vector<bool> lado, visitado;
-	unordered_map<int,int> cantidad;
-	Bipartito(int N){
-		lado.resize(N);
-		pareja.resize(N);
-		visitado.resize(N);
-		aristas.resize(N);
-		//cantidad.resize(101);
-		n = N;
+	Flujo2D cap, flujo;
+	Lista padre,dist;
+	vector<char> numeros;
+
+	GFlujo(int n){
+		this->n = n;
+		dist.resize(n);
+		padre.resize(n);
+		aristas.resize(n);
+		Flujo1D aux(n);
+		cap.resize(n,aux);
+		flujo.resize(n,aux);
+
 	}
 
-	void addEdge(int u, int v) {
+	void addEdge(int u, int v ,Flujo c){
+		flujo[v][u]+=c;// Solo dirigidas!
+		cap[u][v]+=c, cap[v][u] += c;
 		aristas[u].push_back(v);
 		aristas[v].push_back(u);
 	}
 
-	void addCantidad(int u,int c){
-		cantidad[u+100]=c;
+	// Flujo maximo mediante Edmonds-Karp O(VE^2).
+	Flujo ActualizarFlujo(int u, Flujo f) {
+		int p = padre[u];
+		if (p == u) return f;
+		f = ActualizarFlujo(p, min(f,
+		cap[p][u] - flujo[p][u]));
+		flujo[p][u] += f;
+		flujo[u][p] -= f;
+		return f;
 	}
 
-	void addLeft(int u) { lado[u] = true; }
-	void addRight(int u) { lado[u] = false; }
-
-	int CaminoIncremental(int u) {
-		visitado[u] = true;
-		cout << "Ahora conocemos al " << u << endl;
-		for (int i = 0; i < aristas[u].size(); ++i){
-			int v = aristas[u][i];			
-			if (pareja[v] == -1){
-				cout << "Le asignamos directo a " << v << " a " << u << endl;
-				return pareja[v] = u;
-			}
-			else{
-				if(cantidad[v] > 1){
-					cout << "La cantidad de " << v << " es de "<< cantidad[v] << endl;
-					cantidad[v]--;
-					return pareja[v] = u;
-				}
+	Flujo AumentarFlujo(int s, int t) {
+		fill(padre.begin(), padre.end(), -1);
+		queue<int> q; q.push(s); padre[s] = s;
+		while (!q.empty()) {
+			int u = q.front();
+			q.pop(); if (u == t) break;
+			for(int i=0; i<aristas[u].size(); ++i){
+				int v = aristas[u][i];
+				if (flujo[u][v] == cap[u][v] || padre[v] != -1) 
+					continue;
+				padre[v] = u, q.push(v);
 			}
 		}
-			
-		for(int i = 0; i < aristas[u].size(); ++i){
-			int v = aristas[u][i];
-			if (visitado[pareja[v]]){
-				cout << "Ya esta visitado el " << pareja[v] << endl; 
-				continue;
-			}
-			if (CaminoIncremental(pareja[v]) != -1){
-				cout << "Nos retorno algo el camino de " << pareja[v] << endl;
-				return pareja[v] = u;
-			}
-		}
-		return -1;
+		if (padre[t] == -1) 
+			return 0;
+		return ActualizarFlujo(t, FINF);
 	}
 
-	int MaxEmparejamiento(int maxL) {
-		int resultado=0;
-		fill(pareja.begin(), pareja.end(), -1);
-		for (int i = 0; i <= maxL; ++i) {
-			if (!lado[i]) 
-				continue;
-			CaminoIncremental(i);
-			fill(visitado.begin(),visitado.end(), false);
-		}
-		//vector<Par> pares;
-		for (int i = 0; i < n; ++i)
-			if (!lado[i] && pareja[i] != -1){
-				cout << "Encontramos a " << pareja[i] << " con " << i-100 << endl;
-				resultado++;
-			}
-		return resultado;//Cardinalidad =pares.size()
+	Flujo EdmondsKarp(int s, int t) {
+		Flujo flujo_maximo = 0, f;
+		while (f = AumentarFlujo(s, t))
+			flujo_maximo += f;
+		return flujo_maximo;
 	}
 };
 
+
 int main(){
-	ios_base::sync_with_stdio(0);
-	cin.tie(0);
-	cout.tie(0);
-	int t,n,m,u,v,a;
-	cin >> t;
-	for (int k = 0; k < t; ++k){
-		cin >> n;
-		int maxL=0;
-		Bipartito *g = new Bipartito(205);
+	//ios_base::sync_with_stdio(0);
+	//cin.tie(0);
+	int n;
+	while(cin >> n){
+		string s;
+		vector<string> matriz(n);
+		vector<int> filas(n,1);
+		vector<int> columnas(n,1);
 		for (int i = 0; i < n; ++i){
-			cin >> u >> v;
-			g->addEdge(u,v+100);
-			g->addLeft(u);
-			g->addRight(v+100);
-			maxL= max(u,maxL);
+			cin >> s;
+			matriz[i]=s;
+			for (int j = 0; j < n; ++j){
+				if(s[j] == 'X'){
+					if(j+1 < n && j != 0){
+						if(s[j+1] != 'X'){
+							if(j == 0)
+								filas[i]++;
+							else{
+								if(s[j-1] != 'X')
+									filas[i]++;
+								else
+									if(j-1 != 0)
+										filas[i]++;
+							}
+						}
+					}
+				}
+			}
 		}
-		cin >> m;
-		for (int i = 0; i < m; ++i){
-			cin >> u >> a;
-			g->addCantidad(u,a);
+
+		for (int j = 0; j < n; ++j){
+			for (int i = 0; i < n; ++i){
+				string aux = matriz[i];
+				if(aux[j] == 'X'){
+					if(i+1 < n && i != 0){
+						if(matriz[i+1][j] != 'X'){
+							if(i == 0)
+								columnas[j]++;
+							else{
+								if(matriz[i-1][j] != 'X')
+									columnas[j]++;
+								else
+									if(i-1 != 0)
+										columnas[i]++;
+							}
+						}
+					}
+				}
+			}
 		}
-		cout << g->MaxEmparejamiento(maxL) << endl;
-	}																																													
-		
+		/*
+		cout << "Valores para filas\n";
+		for (int i = 0; i < n; ++i){
+			cout << filas[i] << " ";
+		}
+		cout << "\nValores para columnas\n";
+		for (int i = 0; i < n; ++i){
+			cout << columnas[i] << " ";
+		}
+		cout << "\n";
+		*/
+		GFlujo *g = new GFlujo(202);
+		int source = 0,end =201;
+		for (int i = 0; i < n; ++i){
+			//Para el source con las filas
+			g->addEdge(source,i+1,filas[i]);
+			//Para las columas con el end
+			g->addEdge(i+101,end,columnas[i]);
+		}
+		//para unir a las filas con las columnas
+		for (int i = 0; i < n; ++i){
+			for (int j = 0; j < n; ++j){
+				if(matriz[i][j] != 'X'){
+					g->addEdge(i+1,j+101,FINF);
+				}
+			}
+		}
+
+		cout << g->EdmondsKarp(source,end) << "\n";
+	}
+	
+	
 	return 0;
 }
+

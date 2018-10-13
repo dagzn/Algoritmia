@@ -1,3 +1,4 @@
+//http://codeforces.com/problemset/problem/474/B
 #include <iostream>
 #include <vector>
 //#define optimizar_io ios_base::sync_with_stdio(0);cin.tie(0);

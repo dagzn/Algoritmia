@@ -1,88 +1,45 @@
-#include <iostream>
-#include <vector>
-#include <algorithm>
-//#define optimizar_io ios_base::sync_with_stdio(0);cin.tie(0);
+#include <bits/stdc++.h>
 using namespace std;
-
-int binarySearch(int left, int right, int arr[], int value) {
-      while (left <= right) {
-            int middle = (left + right) / 2;
-            if (arr[middle] == value)
-                  return middle;
-            else if (arr[middle] > value)
-                  right = middle - 1;
-            else
-                  left = middle + 1;
-      }
-      return -1;
-}	
-
-int checar(int num, int pos, int arr[]){
-	while(arr[pos-1] == num){
-		pos = pos-1;
-	}
-	return pos;
-}
-
-
-int main(){
-	int N,Q,aux,resul,caso=0;
-	
-	vector<int> query;
-	vector<int> resultados;
-
-	//optimizar_io
-	//optimizar_io
-
-	cin >> N >> Q;
-	
-	while(N != 0 && Q != 0){
-		caso++;
-		int marbles[N];
-
-		for (int i = 0; i < N; ++i)
-		{
-			cin >>marbles[i];
-			//marbles.push_back(aux);
+#define endl '\n'
+int binaria(vector<int> &num,int search){
+	int left=0,right=num.size()-1,middle;
+	int resultado=-1;
+	for(int i =0; i < 15; i++){
+		middle = (left+right)/2;
+		if(num[middle] == search){
+			resultado = middle;
+			right = middle-1;
 		}
-		
-		for (int j = 0; j < Q; ++j)
-		{
-			cin >> aux;
-			query.push_back(aux);
-		}
-
-		sort(marbles,marbles+N);
-
-		
-		for (int k = 0; k < Q; ++k)
-		{	
-			resultados.push_back(binarySearch(0,N-1,marbles,query[k]));
-		}
-		
-		for (int i = 0; i < Q; ++i)
-		{
-			if( resultados[i] > 0){
-				resultados[i] = checar(marbles[resultados[i]],resultados[i],marbles);
-			}
-		}
-
-		cout << "CASE# " << caso << ":"<< endl;
-
-		for (int i = 0; i < resultados.size(); ++i)
-		{
-			if(resultados[i] < 0)
-				cout << query[i]<<" not found"<< endl;
+		else{
+			if(num[middle] > search)
+				right = middle-1;
 			else
-				cout << query[i] <<" found at " << resultados[i] + 1 << endl;
+				left = middle+1;
 		}
-
-		query.clear();
-		resultados.clear();
-		cin >> N >> Q;
 	}
-
-	
-	
-	return 1; 
+	return resultado;
+}
+int main(){
+	int n,q,cont=0,query;
+	while(true){
+		cin >> n >>q;
+		if(!n && !q)
+			break;
+		vector<int> num(n);
+		cont++;
+		for (int i = 0; i < n; ++i){
+			cin >> num[i];
+		}
+		sort(num.begin(), num.end());
+		cout << "CASE# " << cont << ":"<< endl;
+		for (int i = 0; i < q; ++i){
+			cin >> query;
+			int res=binaria(num,query);
+			if(res >=0)
+				cout << query << " found at " << res+1 << endl;
+			else
+				cout << query << " not found\n";
+		}
+	}
+	return 0;
 }

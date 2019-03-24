@@ -10,7 +10,7 @@ using namespace std;
 #define prec(n,a) fixed << setprecision(n) << a
 #define pb push_back
 #define mp make_pair
-#define optimizar_io ios_base::sync_with_stdio(0);cin.tie(0);
+#define __ ios_base::sync_with_stdio(0);cin.tie(0);
 #define GMOD(n,k) ( ( ((n) % (k)) + (k) ) % (k))
 typedef long long int lli;
 typedef long double ld;

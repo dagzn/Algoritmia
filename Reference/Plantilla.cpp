@@ -20,4 +20,4 @@ typedef vector<vi> vvi;
 #define MOD 1000000007
 #define INF 1<<30
 //const lli inf = 4000000000000LL;
-const ld PI = acos(-1,0);
+const ld PI = acos(-1.0);

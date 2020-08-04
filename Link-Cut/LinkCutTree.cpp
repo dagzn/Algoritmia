@@ -1,8 +1,7 @@
 #define forn(i,a,n) for(int i=a; i < n; i++)
-
 struct Splay
 {
-	int flip; 
+	int flip,idx;
 	Splay *parent,*pathParent;
 	Splay * c[2];//c[0] = left, c[1]= right
 	Splay() : parent(NULL),flip(0),pathParent(NULL){
@@ -12,6 +11,10 @@ struct Splay
 
 	void fix(){//O(1)
 		forn(i,0,2) if(c[i]) c[i]->parent = this;
+	}
+
+	void setidx(int i){
+		idx = i;
 	}
 
 	void push_flip(){//O(1)
@@ -28,8 +31,7 @@ struct Splay
 	void rotate(){
 		Splay *B = parent;
 		int tag = up(),t2 = B->up();
-		if(B->parent)
-			B->parent->c[t2] = this;
+		if(B->parent) B->parent->c[t2] = this;
 		parent = B->parent;
 		if(c[tag^1]) c[tag^1]->parent = B;
 		B->c[tag] = c[tag^1];
@@ -77,8 +79,14 @@ struct LinkCut
 		else{
 			node[v].c[0]->parent=NULL;
 			node[v].c[0] = NULL;
-			node[v].fix();
 		}
+	}
+
+	void cut(int u){
+		access(u);
+		node[u].splay();
+		if(node[u].c[0]) 
+			node[u].c[0]->parent = NULL, node[u].c[0] = NULL;
 	}
 
 	bool connected(int u,int v){
@@ -90,27 +98,31 @@ struct LinkCut
 	void make_root(int u){
 		access(u);
 		node[u].splay();
-		if(node[u].c[0]){
-			node[u].c[0]->parent=NULL;
-			node[u].c[0]->flip^=1;
-			node[u].c[0]->pathParent = &node[u];
-			node[u].c[0]=NULL;
-			node[u].fix();
-		}
+		node[u].flip^=1;
 	}
-
+	
 	Splay *access(int u){
-		Splay *x, *pp;
-		for(x = node[u].splay(); x->pathParent; x =pp){
-			pp = x->pathParent->splay();
-			x->pathParent = NULL;
-			if(pp->c[1]){
-				pp->c[1]->parent = NULL;
-				pp->c[1]->pathParent = pp;
+		Splay *x,*past;
+		x = past = NULL;
+		for(x = node[u].splay(); 1; ){
+			x->splay();
+			if(x->c[1]){
+				x->c[1]->parent= NULL;
+				x->c[1]->pathParent= x;
 			}
-			pp->c[1] = x;
-			pp->fix();
+			x->c[1] = past;
+			x->fix();
+			if(! x->pathParent) break;
+			past = x;
+			x = x->pathParent;
+			past->pathParent = NULL;
 		}
 		return x;
+	}
+
+	int lca(int u, int v){
+		access(u);
+		Splay * nodo = access(v);
+		return nodo->idx;
 	}
 };
